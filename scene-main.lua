@@ -52,7 +52,7 @@ function scene:create( event )
         sceneGroup.startGame()
     end
 
-logo.x = -4000
+--logo.x = -4000
 
 
     local ship = require("class-ship").new()
@@ -103,9 +103,9 @@ logo.x = -4000
         if ( event.phase == "began" ) then
             --print( "began: " .. event.object1.myName .. " and " .. event.object2.myName )
             --print(event.object1.id, event.object2.id)
-            if event.object1.id == "logo" or event.object2.id == "logo" then
-                return
-            end
+            -- if event.object1.id == "logo" or event.object2.id == "logo" then
+            --     return
+            -- end
 
             if event.object1.id == "ship" and event.object2.id == "laser" then
                 return
@@ -140,7 +140,7 @@ logo.x = -4000
     -- local mEffects = require("module-effects")
     -- mEffects.show("explosion", CENTER_X, CENTER_Y, 50, 50)
 
-    classPlanet.new({name=1, id=os.time()})
+
 
 
 
@@ -162,7 +162,11 @@ logo.x = -4000
         end
     end
 
-    sceneGroup.startGame()
+
+
+
+    --classPlanet.new({name=1, id=os.time()})
+    --sceneGroup.startGame()
 
 end
 

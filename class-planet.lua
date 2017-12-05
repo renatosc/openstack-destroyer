@@ -83,7 +83,7 @@ classPlanet.new = createPlanet
 
 
 classPlanet.refreshPlanets = function()
-
+	print("on refreshPlanets")
 	local currPlanets = classPlanet._planets
 	local planetsToCreate = {}
 	local planetsToDestroy = {}
