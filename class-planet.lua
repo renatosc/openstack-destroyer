@@ -4,16 +4,23 @@ classPlanet._planets = {}
 
 
 function createPlanet(options)
-	local name = options.name
-	local id = options.id
+	local name = options.name or "unknown"
+	local vmId = options.id
 	local index = math.random(1,3)
+
+	-- optional parameters
+	local imageName = options.imageName
+	local x = options.x
+	local y = options.y
+	local fromLeft = options.fromLeft
+
 
 	print("Creating Planet for VM with name '" ..tostring(name) .. "'")
 
 	local planetData = {}
-	planetData[1] = { y= math.random(1,4)/4,  imageWidth=50, imageHeight=50, impulse=-0.03}
-	planetData[2] = { y= math.random(1,5)/5, imageWidth=35, imageHeight=35, impulse=-0.02}
-	planetData[3] = { y= math.random(1,10)/10,  imageWidth=30, imageHeight=30, impulse=0.01}
+	planetData[1] = { y= math.random(1,4)/4,  imageWidth=50, imageHeight=50 }
+	planetData[2] = { y= math.random(1,5)/5, imageWidth=35, imageHeight=35}
+	planetData[3] = { y= math.random(1,10)/10,  imageWidth=30, imageHeight=30}
 
 
 	local p = planetData[index]
@@ -21,22 +28,30 @@ function createPlanet(options)
 	planet.y = display.contentCenterY * p.y
 	planet.id = "planet"
 	planet.vmName = name
-	planet.vmId = id
+	planet.vmId = vmId
 
 
-	if index == 3 then
-		planet.x = - planet.contentWidth
-	else
-		planet.x = SCREEN_W +  planet.contentWidth
+	local fromLeft = fromLeft or (math.random( 1,4 ) > 2)
+
+	local initialX = SCREEN_W + planet.contentWidth
+	local impulse = - (0.01  + math.rad( 1,5 )/100)
+	if fromLeft then
+		initialX = - planet.contentWidth
+		impulse = - impulse
 	end
+	planet.x = initialX
+	planet.y = SCREEN_H * math.random( 1,70 )/100
+
+
+	-- overwriting position if manually set (used for when the planet is coming from a star)
+	planet.x = x or planet.x
+	planet.y = y or planet.y
+
 
 	planet.initialx = planet.x
 	physics.addBody( planet, "dynamic", {radius = p.imageWidth*0.5} )
     planet.isSensor = true;
-	planet:applyLinearImpulse( p.impulse, 0, planet.x, planet.y)
--- planet.x = CENTER_X
--- planet.y = CENTER_Y
--- planet:applyLinearImpulse( -0.01, 0  , planet.x, planet.y)
+	planet:applyLinearImpulse( impulse, 0, planet.x, planet.y)
 
 
 

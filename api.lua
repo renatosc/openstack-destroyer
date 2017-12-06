@@ -175,6 +175,10 @@ api.getVirtualMachines = function(onSuccess, onFail)
     local data = require("json").decode(fakeData)
     _G.STORAGE.saveVMs(data)
 
+    if onSuccess then
+        onSuccess()
+    end
+
     if true then return end
 
     local params = {}
@@ -208,9 +212,9 @@ end
 
 --TODO: Fix this function
 api.createNewVirtualMachine = function(vmName, onSuccess, onFail)
-    print("Calling API to TERMINATE VM with Id '" .. vmId .. "'")
+    print("Calling API to TERMINATE VM with Name '" .. tostring(vmName) .. "'")
     timer.performWithDelay(1000, function()
-        onSuccess()
+        onSuccess({id="e0238ae9-cf84-448f-a379-6cee0f97f19c", status="ACTIVE", name ="vmFake1"})
     end)
 
     if true then return end
@@ -219,9 +223,9 @@ api.createNewVirtualMachine = function(vmName, onSuccess, onFail)
 
     local params = {}
     params["type"] = "server"
-    params["id"] = vmId
+    params["name"] = vmName
 
-    getJSON("os/del",
+    getJSON("os/create",
         params,
         function(data)
             local success = data.errorCode == nil
@@ -249,7 +253,7 @@ end
 
 -- gets the number of active virtual machines
 api.terminateVirtualMachine = function(vmId, onSuccess, onFail)
-    print("Calling API to TERMINATE VM with Id '" .. vmId .. "'")
+    print("Calling API to TERMINATE VM with Id '" .. tostring(vmId) .. "'")
     timer.performWithDelay(1000, function()
         onSuccess()
     end)

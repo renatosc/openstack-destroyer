@@ -43,8 +43,8 @@ function scene:create( event )
     logo.width = logo.width * scaleF
     logo.height = logo.height *scaleF
 
-    logo.x=_G.CENTER_X
-    logo.y= 40 + logo.contentHeight*.5
+    logo.x = _G.CENTER_X
+    logo.y = 40 + logo.contentHeight*.5
     sceneGroup:insert(logo)
     physics.addBody( logo, "dynamic", {isSensor=true} )
     logo.onCollision = function()
@@ -147,6 +147,7 @@ function scene:create( event )
     sceneGroup.startRefreshing = function()
         if sceneGroup._refreshLoopId then return end
         sceneGroup._refreshLoopId = timer.performWithDelay(2000, function()
+            print("going to get Virtual Machines...")
             API.getVirtualMachines(
                 function(dataVMs) -- on success
                     classPlanet.refreshPlanets()

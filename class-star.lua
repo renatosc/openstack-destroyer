@@ -25,18 +25,23 @@ local newStar = function()
 	star.x = initialX
 	star.y = SCREEN_H * math.random( 1,70 )/100
 	star._x = initialX
-print("new Star!!")
+
 	physics.addBody( star, "dynamic", {radius = star.contentWidth*0.5, isSensor = true} )
 	star:applyLinearImpulse( impulse, 0, star.x, star.y)
+
+--DEBUG VALUES
+--star.x = CENTER_X
+--star.y = CENTER_Y
 
 
 	star.showFusion = function()
 		local mEffects = require("module-effects")
     	star._effect = mEffects.show("whitePuff",star.x, star.y, star.contentWidth, star.contentHeight)
 	end
-
+print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
 
     star.onCollision = function()
+    	local currX, currY = star.x, star.y
     	display.remove(star)
     	if star._isAlreadyHit then return end
 
@@ -45,9 +50,20 @@ print("new Star!!")
     	star.showFusion()
 
     	-- spin new instance
-    	API.createNewVirtualMachine(star.name, function()
+    	API.createNewVirtualMachine(star.name,
+    		function(vmData)
 
-    		--TODO: Create new planet here
+
+    		require("class-planet").new{
+    			id=vmData.id,
+    			name=vmData.name,
+    			x=currX,
+    			y=currY,
+    			fromLeft=fromLeft,
+
+    		}
+    		star.destroy()
+
 
     	end)
 
@@ -71,7 +87,7 @@ end
 
 
 classStar.start = function()
-	classStar._spawnLoopId = timer.performWithDelay(1000,   --1000 * math.random(1,10),
+	classStar._spawnLoopId = timer.performWithDelay(5000,   --1000 * math.random(1,10),
 		function()
 	    	newStar()
 	end, -1)
