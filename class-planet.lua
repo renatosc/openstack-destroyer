@@ -41,7 +41,7 @@ function createPlanet(options)
 	end
 	planet.x = initialX
 	planet.y = SCREEN_H * math.random( 1,70 )/100
-
+	planet.fromLeft = fromLeft
 
 	-- overwriting position if manually set (used for when the planet is coming from a star)
 	planet.x = x or planet.x
@@ -51,7 +51,7 @@ function createPlanet(options)
 	planet.initialx = planet.x
 	physics.addBody( planet, "dynamic", {radius = p.imageWidth*0.5} )
     planet.isSensor = true;
-	planet:applyLinearImpulse( impulse, 0, planet.x, planet.y)
+	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
 
 
 
@@ -63,6 +63,7 @@ function createPlanet(options)
 
 
     planet.onCollision = function()
+    	print("on planet.onCollision")
     	display.remove(planet)
     	if planet._isAlreadyHit then return end
 
@@ -88,8 +89,13 @@ function createPlanet(options)
     classPlanet._planets[name] = planet
 
 
+    planet.restart = function()
+    	planet.x = planet.initialx
+    end
 
-    timer.performWithDelay(17000, function()planet.x = planet.initialx end, -1)
+
+
+    --timer.performWithDelay(2000, function()planet.x = planet.initialx end, -1)
 
 end
 

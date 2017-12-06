@@ -28,6 +28,11 @@ function scene:create( event )
     background.fill.scaleY = 0.5
 
 
+    ---
+
+
+
+
     local physics = require "physics"
     physics.start( )
     physics.setGravity(0,0)
@@ -91,7 +96,43 @@ function scene:create( event )
     -- end
 
 
+    local wallLeft = display.newRect( sceneGroup, 0,CENTER_Y,2,SCREEN_H)
+    wallLeft.fill = {1,0,0}
+    wallLeft.id="wallLeft"
+    physics.addBody( wallLeft, "dynamic", {isSensor = true} )
 
+    local wallRight = display.newRect( sceneGroup, SCREEN_W,CENTER_Y,2,SCREEN_H)
+    wallRight.id="wallRight"
+    wallRight.fill = {1,0,0}
+    physics.addBody( wallRight, "dynamic", {isSensor = true} )
+
+    local function onLocalCollision( self, event )
+
+        if ( event.phase == "began" ) then
+            print( tostring(self.id) .. ": collision began with " .. tostring(event.other.id ))
+            return
+        elseif ( event.phase == "ended" ) then
+            print( tostring(self.myName) .. ": collision ended with " .. tostring(event.other.id ))
+            if event.other.id == "planet" or event.other.id == "star" then
+                if self.id == "wallLeft" and not event.other.fromLeft then
+                    timer.performWithDelay(1000, function()
+                        event.other.restart()
+                    end)
+
+                elseif self.id == "wallRight" and event.other.fromLeft then
+                    timer.performWithDelay(1000, function()
+                        event.other.restart()
+                    end)
+                end
+            end
+
+        end
+    end
+
+    wallLeft.collision = onLocalCollision
+    wallLeft:addEventListener( "collision" )
+    wallRight.collision = onLocalCollision
+    wallRight:addEventListener( "collision" )
 
 
     ---------------------------------------------------
@@ -116,12 +157,22 @@ function scene:create( event )
             if event.object1.id ==  event.object2.id then
                 return
             end
+            if event.object1.id == "wallLeft" or event.object1.id == "wallRight" or
+                event.object2.id == "wallLeft" or event.object2.id == "wallRight" then
+                -- we are handling wall collision locally
+                return
+            end
 
+
+
+            print("event.object1.id, event.object2.id=", event.object1.id, event.object1.id)
             if event.object1.onCollision then
+                print("Global Collision - going call collision obj1")
                 event.object1.onCollision()
             end
 
             if event.object2.onCollision then
+                print("Global Collision - going call collision obj2 - ")
                 event.object2.onCollision()
             end
 

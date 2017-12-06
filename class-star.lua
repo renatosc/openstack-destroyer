@@ -15,6 +15,8 @@ local newStar = function()
 	--star.fill = {type="image", filename="images/star.png"}
 
 	local fromLeft = (math.random( 1,4 ) > 2)
+	star.fromLeft = fromLeft
+
 
 	local initialX = SCREEN_W + star.contentWidth
 	local impulse = - (0.01  + math.rad( 1,5 )/100)
@@ -79,6 +81,10 @@ print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
     	timer.performWithDelay(10, function()
     	    star = nil
     	end)
+    end
+
+    star.restart = function()
+    	star.x = star._x
     end
 
     classStar._star = star
