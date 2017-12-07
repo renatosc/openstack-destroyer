@@ -2,6 +2,14 @@ local classShip = {}
 
 classShip._ship = nil
 
+
+LASER_TYPE = {}
+LASER_TYPE["destroy"] = {filename="red", name="Destroy"}
+LASER_TYPE["pause"] = {filename="blue", name="Pause"}
+LASER_TYPE["start"] = {filename="green", name="Start"}
+
+classShip._laserSelectedId = nil
+
 classShip.new = function()
 
 	local group = display.newGroup()
@@ -17,13 +25,17 @@ classShip.new = function()
     group.shoot = function()
         print("on shoot")
 
-        local laser = display.newImage("images/laser-blue.png")
+        local laserFilename = LASER_TYPE[classShip._laserSelectedId].filename
+        local laser = display.newImage("images/laser-" .. laserFilename ..".png")
         physics.addBody( laser, "dynamic" ,{radius=4, isSensor=true})
         -- local laser = display.newCircle()
         -- physics.addBody( laser, "dynamic" )
         laser.id = "laser"
+        laser.laserType = classShip._laserSelectedId
 
-        ship:toFront( )
+        if ship then
+            ship:toFront( )
+        end
         laser.x = ship.x
         laser.y = ship.y
         laser.rotation = ship.rotation
@@ -94,15 +106,12 @@ classShip.new = function()
 
     	local force = 0.15
 
-
-
     	local angle = (ship.rotation) -- * (360/100) -- (100 == total percange)
         local sin = math.sin(angle*math.pi/180)
         local cos = math.cos(angle*math.pi/180)
         local x = force*sin
         local y = - force*cos
 		print("angle=", angle, sin, cos)
-
 
 
     	ship:applyLinearImpulse( x, y, ship.x, ship.y)
@@ -136,6 +145,20 @@ classShip.new = function()
     end
 
 
+
+
+    group.goToStartPosition = function(skipAnimation)
+        if skipAnimation then
+            ship.x=CENTER_X
+            ship.rotation=0
+            return
+        end
+        ship.x = -100
+        ship.rotation = 90
+        transition.to(ship, {x=CENTER_X, time=3000, transition=easing.inOutQuad, onComplete=function()
+            transition.to(ship, {rotation=0, time=1000, transition=easing.inOutQuad})
+        end})
+    end
 
     classShip._ship = group
 

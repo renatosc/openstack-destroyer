@@ -18,19 +18,24 @@ function scene:create( event )
     -- Initialize the scene here.
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 
+    local physics = require "physics"
+    physics.start( )
+    physics.setGravity(0,0)
+
+    --physics.setDrawMode( "hybrid" )
+    --physics.setDrawMode( "debug" )
 
     local background = display.newRect(sceneGroup, CENTER_X, CENTER_Y, SCREEN_W, SCREEN_H)
-
---display.setDefault( "textureWrapX", "repeat" )
---display.setDefault( "textureWrapY", "mirroredRepeat" )
+    --display.setDefault( "textureWrapX", "repeat" )
+    --display.setDefault( "textureWrapY", "mirroredRepeat" )
     background.fill = {filename="images/background-blue.png", type="image"}
     background.fill.scaleX = 0.5
     background.fill.scaleY = 0.5
 
 
-    ----------
+    ---------------------------------------------------
     -- HEADER (Points, Timer, Number of Machines)
-    local function createHeader( ... )
+    local function createGameStatus( ... )
 
         local margin = 10
 
@@ -62,6 +67,82 @@ function scene:create( event )
         lbNumOfPointsValue.anchorX = 0
 
 
+
+        -- BOTTOM RIGHT
+        local cShip = require("class-ship")
+        local dataLasers = LASER_TYPE
+        local groupButtons = display.newGroup()
+        local btLaserHandler = function(id, newStatus)
+            cShip._laserSelectedId = id
+            for i=1, groupButtons.numChildren do
+                local g = groupButtons[i]
+                if g.id ~= id then
+                    g.deSelect()
+                end
+            end
+        end
+        local function createLaserGroup(id, name, imageColor, onHandler)
+            local groupButton = display.newGroup()
+            groupButton.id = id
+            local colorSelected = {.4,.4,.4}
+            local colorNotSelected = {.3,.3,.3,.3}
+
+            local buttonW = 60
+            local buttonH = 100
+            local button = display.newRect(groupButton, buttonW*0.5, buttonH*.5, buttonW, buttonH)
+            local function onTap()
+                if button._selected then -- not allowing to deselect itself
+                    return
+                end
+                local newStatus = not button._selected
+
+                if newStatus then
+                    button.fill = colorSelected
+                else
+                    button.fill = colorNotSelected
+                end
+                button._selected = button._selected
+                if onHandler then
+                    onHandler(id, newStatus)
+                end
+            end
+            button:addEventListener( "tap", onTap)
+
+            local img = display.newImage("images/laser-" .. imageColor .. ".png")
+            groupButton:insert(img)
+            img.x = button.x
+            img.y = buttonH*0.4
+
+            local lb = display.newText{parent=groupButton, text=name, x=button.x, y=buttonH*0.9 , font=native.systemFont, fontSize=16 }
+            lb.anchorY = 1
+            lb:setTextColor(1,1,1)
+
+            groupButton.deSelect = function()
+                button.fill = colorNotSelected
+            end
+            groupButton.select = onTap
+
+
+            groupButton.deSelect()
+
+            return groupButton
+        end
+
+        for id, v in pairs(dataLasers) do
+            local b = createLaserGroup(id, v.name, v.filename,btLaserHandler)
+            b.x = groupButtons.numChildren > 0 and groupButtons.contentWidth or 0
+            groupButtons:insert(b)
+            if id == "destroy" then
+                b.select()
+            end
+        end
+        groupButtons.x = SCREEN_W
+        groupButtons._x = SCREEN_W - groupButtons.contentWidth
+        groupButtons.y = SCREEN_H - groupButtons.contentHeight
+
+        group.showLaserSelection = function()
+            transition.to(groupButtons, {x = groupButtons._x, time=1000, transition=easing.inOutCubic})
+        end
 
 
         group.startTimer = function(numOfPoints)
@@ -127,28 +208,25 @@ function scene:create( event )
         return group
 
     end
-    _G.GAME = createHeader()
-
-    ---
+    _G.GAME = createGameStatus()
 
 
 
 
-    local physics = require "physics"
-    physics.start( )
-    physics.setGravity(0,0)
 
---    physics.setDrawMode( "hybrid" )
---physics.setDrawMode( "debug" )
+
+
+
+
+    ---------------------------------------------------
+    -- Logo
+
 
     local logo = display.newImage(sceneGroup, "images/logo.png")
     logo.id = "logo"
     local scaleF = math.min(SCREEN_H*.7/logo.contentWidth , SCREEN_W*0.9/logo.contentHeight)
-    --logo:scale(scaleF, scaleF)
-
     logo.width = logo.width * scaleF
     logo.height = logo.height *scaleF
-
     logo.x = _G.CENTER_X
     logo.y = 40 + logo.contentHeight*.5
     sceneGroup:insert(logo)
@@ -157,11 +235,15 @@ function scene:create( event )
         display.remove(logo)
         sceneGroup.startGame()
     end
-
+    sceneGroup.logo = logo
 --logo.x = -4000
 
 
-    local ship = require("class-ship").new()
+
+
+
+
+
 
     local classPlanet = require("class-planet")
 
@@ -181,35 +263,25 @@ function scene:create( event )
         require("class-star").start()
 
         _G.GAME.startTimer()
+
+        _G.GAME.showLaserSelection()
     end
 
 
-    -- sceneGroup.selectLevel = function(levelNumber)
 
 
-    --     _G.SERVER.startVMs(
-    --         function(dataVMs)
-
-    --             for _, vm in ipairs(dataVMs) do
-    --                 classPlanet.new(vm)
-    --             end
-
-    --         end,
-    --         function()
-
-    --         end)
-
-    -- end
+    ---------------------------------------------------
+    -- SCENE BOUNDARIES
 
 
     local wallLeft = display.newRect( sceneGroup, 0,CENTER_Y,2,SCREEN_H)
-    wallLeft.fill = {1,0,0}
+    wallLeft.fill = {1,0,0,0}
     wallLeft.id="wallLeft"
     physics.addBody( wallLeft, "dynamic", {isSensor = true} )
 
     local wallRight = display.newRect( sceneGroup, SCREEN_W,CENTER_Y,2,SCREEN_H)
     wallRight.id="wallRight"
-    wallRight.fill = {1,0,0}
+    wallRight.fill = {1,0,0,0}
     physics.addBody( wallRight, "dynamic", {isSensor = true} )
 
     local function onLocalCollision( self, event )
@@ -241,14 +313,18 @@ function scene:create( event )
     wallRight:addEventListener( "collision" )
 
 
+
+
+
+
+
     ---------------------------------------------------
     -- GLOBAL COLLISION HANDLER
 
-
     local function onGlobalCollision( event )
-        --print("on onGlobalCollision")
+        print("on onGlobalCollision")
         if ( event.phase == "began" ) then
-            --print( "began: " .. event.object1.id .. " and " .. event.object2.id )
+            print( "began: " .. tostring(event.object1.id) .. " and " .. tostring(event.object2.id) )
             --print(event.object1.id, event.object2.id)
             -- if event.object1.id == "logo" or event.object2.id == "logo" then
             --     return
@@ -278,10 +354,10 @@ function scene:create( event )
             -- allowing laser collisions with all objects (the ship is already removed from that above)
             if (o1.id== "laser" or o2.id == "laser") then
                 if o1.onCollision then
-                    o1.onCollision()
+                    o1.onCollision(o2.laserType)
                 end
                 if o2.onCollision then
-                    o2.onCollision()
+                    o2.onCollision(o1.laserType)
                 end
                 return
             end
@@ -289,7 +365,6 @@ function scene:create( event )
 
             -- allowing ship hit planet
             if (o1.id== "ship" or o2.id == "planet") or (o2.id== "ship" or o1.id == "planet") then
-                print("calling c")
                 o1.onCollision()
                 o2.onCollision()
                 return
@@ -319,14 +394,8 @@ function scene:create( event )
 
 
 
-
-
-    -- local mEffects = require("module-effects")
-    -- mEffects.show("explosion", CENTER_X, CENTER_Y, 50, 50)
-
-
-
-
+    ---------------------------------------------------
+    -- REFRESH STATE
 
     sceneGroup.startRefreshing = function()
         if sceneGroup._refreshLoopId then return end
@@ -336,9 +405,8 @@ function scene:create( event )
                 function(dataVMs) -- on success
                     classPlanet.refreshPlanets()
                 end)
-        end, -1)
+        end,IS_DEBUG and 1 or -1)
     end
-
 
     sceneGroup.stopRefreshing = function()
         if sceneGroup._refreshLoopId then
@@ -348,10 +416,16 @@ function scene:create( event )
     end
 
 
+    ---------------------------------------------------
+    -- LOADING BASIC OPENSTACK INFO
 
+    sceneGroup.loadOpenStackInfo = function()
+        API.getImages()
+        API.getFlavors()
+        API.getNetworks()
+    end
 
-    --classPlanet.new({name=1, id=os.time()})
-    --sceneGroup.startGame()
+    sceneGroup.loadOpenStackInfo()
 
 end
 
@@ -370,7 +444,17 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+        local ship = require("class-ship").new()
 
+        if _G.IS_DEBUG then
+            ship.goToStartPosition(true)
+            return
+        end
+
+        transition.from(sceneGroup.logo,{xScale=0.1, yScale=0.1, time=2000, transition=easing.outElastic, onComplete=function()
+
+            ship.goToStartPosition()
+        end})
 
     end
 

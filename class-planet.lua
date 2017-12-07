@@ -43,18 +43,12 @@ function createPlanet(options)
 	elseif string.find( imageName, "medium" ) then
 		size = 2
 	end
-size = math.random( 1,3 )
+size = 3
 	print("Creating Planet for VM with name '" ..tostring(name) .. "'")
 
-	-- local planetData = {}
-	-- planetData[1] = { y= math.random(1,4)/4,  imageWidth=50, imageHeight=50 }
-	-- planetData[2] = { y= math.random(1,5)/5, imageWidth=35, imageHeight=35}
-	-- planetData[3] = { y= math.random(1,10)/10,  imageWidth=30, imageHeight=30}
 
 	local scaleFactor = 1 * (size/3)
 
-	--local p = planetData[index]
-	--local planet = display.newImageRect( "images/planet-" .. index .. ".png", p.imageWidth, p.imageHeight )
 	local planet = display.newImage( "images/" .. imageFilename)
 	planet.width = planet.width * scaleFactor
 	planet.height = planet.height * scaleFactor
@@ -83,14 +77,18 @@ size = math.random( 1,3 )
 	planet.x = x or planet.x
 	planet.y = y or planet.y
 
+	if IS_DEBUG then
+		planet.x = CENTER_X
+	end
 	-- making sure it is not on top of the game header
 	planet.y = math.max(planet.y, _G.MIN_Y + planet.contentHeight)
 
 	planet.initialx = planet.x
 	physics.addBody( planet, "dynamic", {radius = planet.contentWidth*0.5} )
     planet.isSensor = true;
-	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
-
+    if not IS_DEBUG then
+		planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
+	end
 
 
 
@@ -99,18 +97,65 @@ size = math.random( 1,3 )
     	planet._effect = mEffects.show("explosion", planet.x, planet.y, planet.contentWidth, planet.contentHeight)
 	end
 
+	planet.resize = function()
+		if planet._isResizing then return end
+		planet._isResizing = true
 
-    planet.onCollision = function()
-    	print("on planet.onCollision")
-    	planet.isVisible = false
+		API.decreaseVirtualMachineSize(planet.vmId, function()
+			planet._isAlreadyHit = false
+			planet._isResizing = false
+		end)
+	end
+
+	planet.pause = function()
+		if planet._isPausing then return end
+		planet._isPausing = true
+		local tId = transition.blink( planet, { time=4000 }  )
+		API.pauseVirtualMachine(planet.vmId, function()
+			planet._isAlreadyHit = false
+			transition.cancel(tId)
+			planet.alpha = 0.3
+			planet._imgPause = diplay.newImage("images/pause.png")
+			planet._imgPause.x = planet.x
+			planet._imgPause.y = planet.y
+		end)
+	end
+
+	planet.resume = function()
+		if planet._isResuming then return end
+		planet._isResuming = true
+		local tId = transition.blink( panet, { time=1000 }  )
+		API.startVirtualMachine(planet.vmId, function()
+			planet._isAlreadyHit = false
+			planet._isResuming = false
+			planet._isPausing = false
+			transition.cancel(tId)
+			planet.alpha = 1
+		end)
+	end
+
+    planet.onCollision = function(laserType)
+    	print("on planet.onCollision - ", laserType)
+
     	if planet._isAlreadyHit then return end
-
     	planet._isAlreadyHit = true
-    	planet.showExplosion()
-    	API.terminateVirtualMachine(planet.vmId,
-    		function()
-    			planet.destroy()
-    		end)
+
+    	if laserType == "pause" then
+    		planet.pause()
+    		return
+		elseif laserType == "start" then
+			planet.resume()
+			return
+    	elseif laserType == "destroy" then
+    		planet.isVisible = false
+    		planet.showExplosion()
+	    	API.terminateVirtualMachine(planet.vmId,
+	    		function()
+	    			planet.destroy()
+	    		end)
+    	end
+
+
     end
 
 
@@ -126,6 +171,7 @@ size = math.random( 1,3 )
 
     -- storing this planet
     classPlanet._planets[name] = planet
+
 
 
     planet.restart = function()
@@ -167,7 +213,10 @@ classPlanet.refreshPlanets = function()
 
 	-- creating the planets for the new VMs
 	for name, planet in pairs(planetsToCreate) do
-		createPlanet({name=name})
+		createPlanet({name=name, id=planet.id })
+		if IS_DEBUG then
+			break
+		end
 	end
 
 	-- removing the planets that shouldn't exist anymore

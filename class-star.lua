@@ -59,7 +59,6 @@ print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
     	API.createNewVirtualMachine(star.name,
     		function(vmData)
 
-
     		require("class-planet").new{
     			id=vmData.id,
     			name=vmData.name,
