@@ -153,15 +153,13 @@ end
 
 api.getImages = function(onSuccess, onFail)
 
-    local fakeData = '[{"id":"2f1e4d6c-64b5-4ccd-9527-169114a21706","status":"ACTIVE","name":"cirros","progress":100,"minRam":0,"minDisk":0,"created":1512464418000,"updated":1512641650000,"size":13267968,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"bookmark","href":"http://localhost:8774/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"alternate","href":"http://controller:9292/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":"application/vnd.openstack.image"}],"metaData":{"os":"linux","description":"linux"},"snapshot":false}]'
-    local data = require("json").decode(fakeData)
-    _G.STORAGE.saveImages(data)
-
-    if onSuccess then
-        onSuccess()
-    end
-
-    if true then return end
+    -- local fakeData = '[{"id":"2f1e4d6c-64b5-4ccd-9527-169114a21706","status":"ACTIVE","name":"cirros","progress":100,"minRam":0,"minDisk":0,"created":1512464418000,"updated":1512641650000,"size":13267968,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"bookmark","href":"http://localhost:8774/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"alternate","href":"http://controller:9292/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":"application/vnd.openstack.image"}],"metaData":{"os":"linux","description":"linux"},"snapshot":false}]'
+    -- local data = require("json").decode(fakeData)
+    -- _G.STORAGE.saveImages(data)
+    -- if onSuccess then
+    --     onSuccess()
+    -- end
+    -- if true then return end
 
     local params = {}
     params["type"] = "image"
@@ -194,15 +192,13 @@ end
 
 api.getFlavors = function(onSuccess, onFail)
 
-    local fakeData = '[{"id":"8eaef415-fdde-443a-8d37-f10bd43519b4","name":"medium","ram":1024,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null}],"public":true},{"id":"9b68c48f-6f8e-4b91-9d17-4067871ca54b","name":"small","ram":512,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null}],"public":true}]'
-    local data = require("json").decode(fakeData)
-    _G.STORAGE.saveFlavors(data)
-
-    if onSuccess then
-        onSuccess()
-    end
-
-    if true then return end
+    -- local fakeData = '[{"id":"8eaef415-fdde-443a-8d37-f10bd43519b4","name":"medium","ram":1024,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null}],"public":true},{"id":"9b68c48f-6f8e-4b91-9d17-4067871ca54b","name":"small","ram":512,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null}],"public":true}]'
+    -- local data = require("json").decode(fakeData)
+    -- _G.STORAGE.saveFlavors(data)
+    -- if onSuccess then
+    --     onSuccess()
+    -- end
+    -- if true then return end
 
     local params = {}
     params["type"] = "flavor"
@@ -232,17 +228,16 @@ api.getFlavors = function(onSuccess, onFail)
         true)    -- silentRequest
 end
 
+
 api.getNetworks = function(onSuccess, onFail)
 
-    local fakeData = '[{"status":"ACTIVE","subnets":["e9722e8a-0f31-44f4-96a9-62dc4e61ae94"],"neutronSubnets":[{"id":"e9722e8a-0f31-44f4-96a9-62dc4e61ae94","name":"provider","networkId":"81152ac4-0aa6-4bf3-b6b9-b9374ae26747","tenantId":"4048750e5ef040ce8741ba6398d811c9","dnsNames":["8.8.4.4"],"hostRoutes":[],"ipVersion":"V4","gateway":"203.0.113.1","cidr":"203.0.113.0/24","ipv6AddressMode":null,"ipv6RaMode":null,"dhcpenabled":true,"allocationPools":[{"start":"203.0.113.101","end":"203.0.113.200"}]}],"name":"provider","providerPhyNet":"provider","adminStateUp":true,"tenantId":"4048750e5ef040ce8741ba6398d811c9","networkType":"FLAT","routerExternal":true,"id":"81152ac4-0aa6-4bf3-b6b9-b9374ae26747","shared":true,"providerSegID":null,"availabilityZoneHints":[],"availabilityZones":["nova"],"mtu":1500},{"status":"ACTIVE","subnets":["bf692cb2-fd62-4a40-9e42-523c6631c509"],"neutronSubnets":[{"id":"bf692cb2-fd62-4a40-9e42-523c6631c509","name":"selfservice","networkId":"a4d0d1c4-cea5-4674-b48b-56c01ba9c804","tenantId":"2fd69c6c5fe54c95836fc95795107b18","dnsNames":["8.8.4.4"],"hostRoutes":[],"ipVersion":"V4","gateway":"172.16.1.1","cidr":"172.16.1.0/24","ipv6AddressMode":null,"ipv6RaMode":null,"dhcpenabled":true,"allocationPools":[{"start":"172.16.1.2","end":"172.16.1.254"}]}],"name":"selfservice","providerPhyNet":null,"adminStateUp":true,"tenantId":"2fd69c6c5fe54c95836fc95795107b18","networkType":"VXLAN","routerExternal":false,"id":"a4d0d1c4-cea5-4674-b48b-56c01ba9c804","shared":false,"providerSegID":"14","availabilityZoneHints":[],"availabilityZones":["nova"],"mtu":1450}]'
-    local data = require("json").decode(fakeData)
-    _G.STORAGE.saveNetworks(data)
-
-    if onSuccess then
-        onSuccess()
-    end
-
-    if true then return end
+    -- local fakeData = '[{"status":"ACTIVE","subnets":["e9722e8a-0f31-44f4-96a9-62dc4e61ae94"],"neutronSubnets":[{"id":"e9722e8a-0f31-44f4-96a9-62dc4e61ae94","name":"provider","networkId":"81152ac4-0aa6-4bf3-b6b9-b9374ae26747","tenantId":"4048750e5ef040ce8741ba6398d811c9","dnsNames":["8.8.4.4"],"hostRoutes":[],"ipVersion":"V4","gateway":"203.0.113.1","cidr":"203.0.113.0/24","ipv6AddressMode":null,"ipv6RaMode":null,"dhcpenabled":true,"allocationPools":[{"start":"203.0.113.101","end":"203.0.113.200"}]}],"name":"provider","providerPhyNet":"provider","adminStateUp":true,"tenantId":"4048750e5ef040ce8741ba6398d811c9","networkType":"FLAT","routerExternal":true,"id":"81152ac4-0aa6-4bf3-b6b9-b9374ae26747","shared":true,"providerSegID":null,"availabilityZoneHints":[],"availabilityZones":["nova"],"mtu":1500},{"status":"ACTIVE","subnets":["bf692cb2-fd62-4a40-9e42-523c6631c509"],"neutronSubnets":[{"id":"bf692cb2-fd62-4a40-9e42-523c6631c509","name":"selfservice","networkId":"a4d0d1c4-cea5-4674-b48b-56c01ba9c804","tenantId":"2fd69c6c5fe54c95836fc95795107b18","dnsNames":["8.8.4.4"],"hostRoutes":[],"ipVersion":"V4","gateway":"172.16.1.1","cidr":"172.16.1.0/24","ipv6AddressMode":null,"ipv6RaMode":null,"dhcpenabled":true,"allocationPools":[{"start":"172.16.1.2","end":"172.16.1.254"}]}],"name":"selfservice","providerPhyNet":null,"adminStateUp":true,"tenantId":"2fd69c6c5fe54c95836fc95795107b18","networkType":"VXLAN","routerExternal":false,"id":"a4d0d1c4-cea5-4674-b48b-56c01ba9c804","shared":false,"providerSegID":"14","availabilityZoneHints":[],"availabilityZones":["nova"],"mtu":1450}]'
+    -- local data = require("json").decode(fakeData)
+    -- _G.STORAGE.saveNetworks(data)
+    -- if onSuccess then
+    --     onSuccess()
+    -- end
+    -- if true then return end
 
     local params = {}
     params["type"] = "network"
@@ -279,15 +274,13 @@ end
 -- gets the number of active virtual machines
 api.getVirtualMachines = function(onSuccess, onFail)
 
-    local fakeData = '[{"id":"ea0de94d-5b93-49c6-b5a4-7dde80791c7c","name":"vm2","addresses":{"addresses":{"provider":[{"macAddr":"fa:16:3e:58:91:29","version":4,"addr":"203.0.113.112","type":"fixed"}]}},"links":[{"rel":"self","href":"http://localhost:8774/v2.1/servers/ea0de94d-5b93-49c6-b5a4-7dde80791c7c","type":null},{"rel":"bookmark","href":"http://localhost:8774/servers/ea0de94d-5b93-49c6-b5a4-7dde80791c7c","type":null}],"image":{"id":"2f1e4d6c-64b5-4ccd-9527-169114a21706","status":"ACTIVE","name":"cirros","progress":100,"minRam":0,"minDisk":0,"created":1512464418000,"updated":1512641650000,"size":13267968,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"bookmark","href":"http://localhost:8774/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"alternate","href":"http://controller:9292/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":"application/vnd.openstack.image"}],"metaData":{"os":"linux","description":"linux"},"snapshot":false},"flavor":{"id":"8eaef415-fdde-443a-8d37-f10bd43519b4","name":"medium","ram":1024,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null}],"public":true},"accessIPv4":"","accessIPv6":"","configDrive":"","status":"ACTIVE","progress":0,"fault":null,"tenantId":"4048750e5ef040ce8741ba6398d811c9","userId":"882a0fec22b24368be005b34e2f296b0","keyName":null,"hostId":"038045d19f5dd976db501facee68f415de256bf411fbe523148a435f","updated":1512641823000,"created":1512641804000,"metadata":{},"securityGroups":[{"name":"default"}],"taskState":null,"powerState":"1","vmState":"active","host":"compute1","instanceName":"instance-00000004","hypervisorHostname":"compute1","diskConfig":"AUTO","availabilityZone":"nova","launchedAt":1512641823000,"terminatedAt":null,"osExtendedVolumesAttached":[],"uuid":null,"adminPass":null,"imageId":"2f1e4d6c-64b5-4ccd-9527-169114a21706","flavorId":"8eaef415-fdde-443a-8d37-f10bd43519b4"},{"id":"e0238ae9-cf84-448f-a379-6cee0f97f19c","name":"vm1","addresses":{"addresses":{"provider":[{"macAddr":"fa:16:3e:8b:30:aa","version":4,"addr":"203.0.113.107","type":"fixed"}]}},"links":[{"rel":"self","href":"http://localhost:8774/v2.1/servers/e0238ae9-cf84-448f-a379-6cee0f97f19c","type":null},{"rel":"bookmark","href":"http://localhost:8774/servers/e0238ae9-cf84-448f-a379-6cee0f97f19c","type":null}],"image":null,"flavor":{"id":"9b68c48f-6f8e-4b91-9d17-4067871ca54b","name":"small","ram":512,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null}],"public":true},"accessIPv4":"","accessIPv6":"","configDrive":"","status":"ACTIVE","progress":0,"fault":null,"tenantId":"4048750e5ef040ce8741ba6398d811c9","userId":"882a0fec22b24368be005b34e2f296b0","keyName":null,"hostId":"038045d19f5dd976db501facee68f415de256bf411fbe523148a435f","updated":1512642393000,"created":1512466454000,"metadata":{},"securityGroups":[{"name":"default"}],"taskState":null,"powerState":"1","vmState":"active","host":"compute1","instanceName":"instance-00000001","hypervisorHostname":"compute1","diskConfig":"AUTO","availabilityZone":"nova","launchedAt":1512466485000,"terminatedAt":null,"osExtendedVolumesAttached":["91238116-799a-4ce0-bb9d-78daa69842fa"],"uuid":null,"adminPass":null,"imageId":null,"flavorId":"9b68c48f-6f8e-4b91-9d17-4067871ca54b"}]'
-    local data = require("json").decode(fakeData)
-    _G.STORAGE.saveVMs(data)
-
-    if onSuccess then
-        onSuccess()
-    end
-
-    if true then return end
+    -- local fakeData = '[{"id":"ea0de94d-5b93-49c6-b5a4-7dde80791c7c","name":"vm2","addresses":{"addresses":{"provider":[{"macAddr":"fa:16:3e:58:91:29","version":4,"addr":"203.0.113.112","type":"fixed"}]}},"links":[{"rel":"self","href":"http://localhost:8774/v2.1/servers/ea0de94d-5b93-49c6-b5a4-7dde80791c7c","type":null},{"rel":"bookmark","href":"http://localhost:8774/servers/ea0de94d-5b93-49c6-b5a4-7dde80791c7c","type":null}],"image":{"id":"2f1e4d6c-64b5-4ccd-9527-169114a21706","status":"ACTIVE","name":"cirros","progress":100,"minRam":0,"minDisk":0,"created":1512464418000,"updated":1512641650000,"size":13267968,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"bookmark","href":"http://localhost:8774/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":null},{"rel":"alternate","href":"http://controller:9292/images/2f1e4d6c-64b5-4ccd-9527-169114a21706","type":"application/vnd.openstack.image"}],"metaData":{"os":"linux","description":"linux"},"snapshot":false},"flavor":{"id":"8eaef415-fdde-443a-8d37-f10bd43519b4","name":"medium","ram":1024,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/8eaef415-fdde-443a-8d37-f10bd43519b4","type":null}],"public":true},"accessIPv4":"","accessIPv6":"","configDrive":"","status":"ACTIVE","progress":0,"fault":null,"tenantId":"4048750e5ef040ce8741ba6398d811c9","userId":"882a0fec22b24368be005b34e2f296b0","keyName":null,"hostId":"038045d19f5dd976db501facee68f415de256bf411fbe523148a435f","updated":1512641823000,"created":1512641804000,"metadata":{},"securityGroups":[{"name":"default"}],"taskState":null,"powerState":"1","vmState":"active","host":"compute1","instanceName":"instance-00000004","hypervisorHostname":"compute1","diskConfig":"AUTO","availabilityZone":"nova","launchedAt":1512641823000,"terminatedAt":null,"osExtendedVolumesAttached":[],"uuid":null,"adminPass":null,"imageId":"2f1e4d6c-64b5-4ccd-9527-169114a21706","flavorId":"8eaef415-fdde-443a-8d37-f10bd43519b4"},{"id":"e0238ae9-cf84-448f-a379-6cee0f97f19c","name":"vm1","addresses":{"addresses":{"provider":[{"macAddr":"fa:16:3e:8b:30:aa","version":4,"addr":"203.0.113.107","type":"fixed"}]}},"links":[{"rel":"self","href":"http://localhost:8774/v2.1/servers/e0238ae9-cf84-448f-a379-6cee0f97f19c","type":null},{"rel":"bookmark","href":"http://localhost:8774/servers/e0238ae9-cf84-448f-a379-6cee0f97f19c","type":null}],"image":null,"flavor":{"id":"9b68c48f-6f8e-4b91-9d17-4067871ca54b","name":"small","ram":512,"vcpus":1,"disk":1,"ephemeral":1,"swap":300,"rxtxFactor":1.0,"disabled":false,"rxtxQuota":0,"rxtxCap":0,"links":[{"rel":"self","href":"http://localhost:8774/v2.1/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null},{"rel":"bookmark","href":"http://localhost:8774/flavors/9b68c48f-6f8e-4b91-9d17-4067871ca54b","type":null}],"public":true},"accessIPv4":"","accessIPv6":"","configDrive":"","status":"ACTIVE","progress":0,"fault":null,"tenantId":"4048750e5ef040ce8741ba6398d811c9","userId":"882a0fec22b24368be005b34e2f296b0","keyName":null,"hostId":"038045d19f5dd976db501facee68f415de256bf411fbe523148a435f","updated":1512642393000,"created":1512466454000,"metadata":{},"securityGroups":[{"name":"default"}],"taskState":null,"powerState":"1","vmState":"active","host":"compute1","instanceName":"instance-00000001","hypervisorHostname":"compute1","diskConfig":"AUTO","availabilityZone":"nova","launchedAt":1512466485000,"terminatedAt":null,"osExtendedVolumesAttached":["91238116-799a-4ce0-bb9d-78daa69842fa"],"uuid":null,"adminPass":null,"imageId":null,"flavorId":"9b68c48f-6f8e-4b91-9d17-4067871ca54b"}]'
+    -- local data = require("json").decode(fakeData)
+    -- _G.STORAGE.saveVMs(data)
+    -- if onSuccess then
+    --     onSuccess()
+    -- end
+    -- if true then return end
 
     local params = {}
     params["type"] = "server"
@@ -319,24 +312,26 @@ end
 
 
 
-api.createNewVirtualMachine = function(vmName, imageId, flavorId, networkId, onSuccess, onFail)
-    print("Calling API to TERMINATE VM with Name '" .. tostring(vmName) .. "'")
-    timer.performWithDelay(1000, function()
-        if onSuccess then
-            onSuccess({id="e0238ae9-cf84-448f-a379-6cee0f97f19c", status="ACTIVE", name ="vmFake1"})
-        end
-    end)
+api.createNewVirtualMachine = function(vmName, onSuccess, onFail)
+    print("Calling API to Create New VM with Name '" .. tostring(vmName) .. "'")
+    -- timer.performWithDelay(1000, function()
+    --     if onSuccess then
+    --         onSuccess({id="e0238ae9-cf84-448f-a379-6cee0f97f19c", status="ACTIVE", name ="vmFake1"})
+    --     end
+    -- end)
 
-    if true then return end
+    --if true then return end
 
 
 
     local params = {}
     params["type"] = "server"
     params["name"] = vmName
-    params["image"] = imageId
-    params["flavor"] = flavorId
-    params["network"] = networkId
+    params["image"] = _G.STORAGE.getRandomImageId()
+    params["flavor"] = _G.STORAGE.getRandomFlavorId()
+    params["network"] = _G.STORAGE.getRandomNetworkId()
+    jp(params)
+
 
 
     getJSON("os/create",
@@ -370,11 +365,11 @@ end
 -- gets the number of active virtual machines
 api.terminateVirtualMachine = function(vmId, onSuccess, onFail)
     print("Calling API to TERMINATE VM with Id '" .. tostring(vmId) .. "'")
-    timer.performWithDelay(1000, function()
-        onSuccess()
-    end)
+    -- timer.performWithDelay(1000, function()
+    --     onSuccess()
+    -- end)
 
-    if true then return end
+    -- if true then return end
 
 
 
@@ -411,11 +406,11 @@ end
 -- pause a virtual machines
 api.pauseVirtualMachine = function(vmId, onSuccess, onFail)
     print("Calling API to pauseVirtualMachine VM with Id '" .. tostring(vmId) .. "'")
-    timer.performWithDelay(1000, function()
-        onSuccess()
-    end)
+    -- timer.performWithDelay(1000, function()
+    --     onSuccess()
+    -- end)
 
-    if true then return end
+    -- if true then return end
 
 
     local params = {}
@@ -426,7 +421,7 @@ api.pauseVirtualMachine = function(vmId, onSuccess, onFail)
     getJSON("os/op",
         params,
         function(data, event)
-            local success = event.response == 200
+            local success = tonumber(event.response) == 200
             print("sucess=", success)
             if success then
                 if onSuccess then
@@ -444,16 +439,16 @@ api.pauseVirtualMachine = function(vmId, onSuccess, onFail)
         true)    -- silentRequest
 end
 
--- pause a virtual machines
+-- start a virtual machines
 api.startVirtualMachine = function(vmId, onSuccess, onFail)
     print("Calling API to startVirtualMachine VM with Id '" .. tostring(vmId) .. "'")
-    timer.performWithDelay(1000, function()
-        if onSuccess then
-        onSuccess()
-        end
-    end)
 
-    if true then return end
+    -- timer.performWithDelay(1000, function()
+    --     if onSuccess then
+    --     onSuccess()
+    --     end
+    -- end)
+    -- if true then return end
 
 
     local params = {}
@@ -481,6 +476,111 @@ api.startVirtualMachine = function(vmId, onSuccess, onFail)
         nil,     -- onProgress
         true)    -- silentRequest
 end
+
+
+api.startAllVirtualMachines = function()
+    local vms = _G.STORAGE.getVMs()
+
+    local vmIds = {}
+    for _,vm in pairs(vms) do
+        vmIds[#vmIds+1] = v,id
+    end
+    local i = 0
+
+    local function runNextApi()
+        i=i+1
+        if i > #vmIds then
+            print("we fininshed running")
+            return
+        end
+        local vmId = vmIds[i]
+        print("going to start VM with id ", id)
+        timer.performWithDelay(1000, function()
+            api.startVirtualMachine(vmId, runNextApi,runNextApi)
+        end)
+
+
+    end
+    runNextApi()
+
+end
+
+
+api.cli = function(cmd)
+    if cmd == nil then return end
+
+    -- opening the Admin Source Script file
+    local file = io.open( "admin-openrc.sh")
+    local adminOpenRC = file:read("*a")
+
+    -- adding our CLI command to the end of it
+    adminOpenRC = adminOpenRC .. cmd
+    --print("adminOpenRC=", adminOpenRC)
+
+    -- saving as a new temporary file
+    local pathForCLIFile = system.pathForFile( "cli.sh", system.TemporaryDirectory )
+    local fileCLI = io.open( pathForCLIFile, "w")
+    fileCLI:write(adminOpenRC)
+    fileCLI:close()
+
+    print("Executing CLI CMD=", cmd)
+    -- asking the system to run that script file via SSH
+    os.execute( "sshpass -p osbash ssh osbash@10.0.0.11 'bash -' < '" .. pathForCLIFile .. "'" )
+end
+
+api.unpauseAllVMsViaCLI = function()
+
+    local pausedVMs = _G.STORAGE.getPausedVMs()
+
+    local vmNames = {}
+    for name,_ in pairs(pausedVMs) do
+        vmNames[#vmNames+1] = name
+    end
+    if #vmNames == 0 then
+        return
+    end
+    local vmNamesString = table.concat( vmNames, " " )
+    local cliCMD = "openstack server unpause " .. vmNamesString
+    print("CLI CMD=", cliCMD)
+    api.cli(cliCMD)
+
+end
+
+
+api.shutdownAllVMsViaCLI = function()
+    local vms = _G.STORAGE.getVMs()
+
+    local vmNames = {}
+    for name,_ in pairs(vms) do
+        vmNames[#vmNames+1] = name
+    end
+    if #vmNames == 0 then
+        return
+    end
+    local vmNamesString = table.concat( vmNames, " " )
+    local cliCMD = "openstack server stop " .. vmNamesString
+    print("CLI CMD=", cliCMD)
+    api.cli(cliCMD)
+end
+
+
+api.startAllVMsViaCLI = function()
+    local vms = _G.STORAGE.getVMs()
+
+    local vmNames = {}
+    for name,_ in pairs(vms) do
+        vmNames[#vmNames+1] = name
+    end
+    if #vmNames == 0 then
+        print("no Instaces to start")
+        return
+    end
+    local vmNamesString = table.concat( vmNames, " " )
+    local cliCMD = "openstack server start " .. vmNamesString
+    print("CLI CMD=", cliCMD)
+    api.cli(cliCMD)
+end
+
 
 
 return api

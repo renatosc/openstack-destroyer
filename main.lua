@@ -1,5 +1,32 @@
 
-_G.IS_DEBUG = true
+--_G.IS_DEBUG = true
+
+jp = function(data)
+	local j = require("json").prettify(data)
+	print(j)
+end
+
+local function myUnhandledErrorListener( event )
+    jp(event)
+    native.requestExit()
+end
+
+Runtime:addEventListener("unhandledError", myUnhandledErrorListener)
+
+
+
+jp = function(data)
+	local j = require("json").prettify(data)
+	print(j)
+end
+
+
+_G.API = require("api")
+
+---_G.API.cli("openstack network list")
+
+--if true then return end
+
 
 -- setting default background to white
 display.setDefault( "background", 0,0,0 )
@@ -15,7 +42,7 @@ _G.SCREEN_H = display.contentHeight
 
 
 
-_G.API = require("api")
+
 _G.STORAGE = require("module-storage")
 
 

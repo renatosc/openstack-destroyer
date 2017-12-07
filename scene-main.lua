@@ -172,6 +172,59 @@ function scene:create( event )
         end
 
 
+
+
+        -- BOTTOM LEFT (CLI)
+        local imgTerminal = display.newImage(sceneGroup, "images/terminal.png")
+        imgTerminal.id = "cli"
+        imgTerminal.x = imgTerminal.contentWidth*.5 + margin
+        imgTerminal.y = SCREEN_H - imgTerminal.contentHeight*.5 - margin
+        imgTerminal.onCollision = function()
+            _G.API.unpauseAllVMsViaCLI()
+        end
+        physics.addBody( imgTerminal, "dynamic", {isSensor=true} )
+        imgTerminal._x = margin + imgTerminal.contentWidth*.5
+        imgTerminal.x = - imgTerminal.contentWidth
+
+        group.showCLI = function()
+            transition.to(imgTerminal, {x = imgTerminal._x, time=1000, transition=easing.inOutCubic})
+        end
+        --local imgTerminalOverlay = display.newRect()
+        imgTerminal:addEventListener("tap", function()
+
+            local bkg = display.newRect(sceneGroup, CENTER_X, CENTER_Y, 400, 400)
+            bkg.fill = {127/255,212/255,248/255}
+
+            local lb = display.newText{parent=sceneGroup, text="Enter CLI command", x=bkg.x, y=bkg.contentHeight*.3, font=native.systemFont, fontSize=24 }
+            lb:setTextColor(0,0,0)
+
+            local input = native.newTextField( bkg.x, bkg.y, bkg.contentWidth*0.7, 60 )
+            --sceneGroup:insert(input)
+
+            local btSubmit = require("widget").newButton{
+                label= "submit",
+                x = bkg.x,
+                y = bkg.contentHeight*.85,
+                fillColor = {default={102/255,102/255,102/255}, over={102/255,102/255,102/255,.3} } ,
+                shape = "rect",
+                width = input.contentWidth,
+                height = 40,
+                onRelease = function()
+                    if input.text and input.text ~= "" then
+                        API.cli(input.text)
+                    end
+                    display.remove(input)
+                    display.remove(lb)
+                    display.remove(bkg)
+
+                end
+            }
+
+
+
+        end)
+
+
         group.startTimer = function(numOfPoints)
             group.isVisible = true
             local durationInMinutes = 1
@@ -189,7 +242,7 @@ function scene:create( event )
                     print("pairing time expired")
                     lbTimer.text = "0:00"
 
-                    --_G.END_GAME()
+                    _G.END_GAME()
                     return
                 end
 
@@ -238,6 +291,35 @@ function scene:create( event )
     _G.GAME = createGameStatus()
 
 
+    _G.END_GAME = function()
+
+        physics.stop( )
+
+        sceneGroup.stopRefreshing()
+
+
+        local img  = display.newImage(sceneGroup, "images/the_end.png")
+        img.x = CENTER_X
+        img.y = CENTER_Y
+
+
+        transition.from(img, {time=2000, xScale=0.1, yScale=0,1, transition=easing.outElastic, onComplete=function()
+
+            API.unpauseAllVMsViaCLI()
+            API.getVirtualMachines(
+                function() -- on success
+                    timer.performWithDelay(2000, function()
+                        API.shutdownAllVMsViaCLI()
+                    end)
+                end)
+        end})
+
+
+    end
+
+-- timer.performWithDelay(4000, function()
+--     _G.END_GAME()
+-- end)
 
 
 
@@ -284,7 +366,10 @@ function scene:create( event )
 
 
     sceneGroup.startGame = function()
+
         print("GAME STARTED! Good Luck!")
+        --API.startAllVMsViaCLI()
+        API.startAllVirtualMachines()
 
         sceneGroup.startRefreshing()
         require("class-star").start()
@@ -293,6 +378,7 @@ function scene:create( event )
         _G.GAME.startTimer()
 
         _G.GAME.showLaserSelection()
+        _G.GAME.showCLI()
     end
 
 
@@ -315,10 +401,10 @@ function scene:create( event )
     local function onLocalCollision( self, event )
 
         if ( event.phase == "began" ) then
-            print( tostring(self.id) .. ": collision began with " .. tostring(event.other.id ))
+            --print( tostring(self.id) .. ": collision began with " .. tostring(event.other.id ))
             return
         elseif ( event.phase == "ended" ) then
-            print( tostring(self.myName) .. ": collision ended with " .. tostring(event.other.id ))
+            --print( tostring(self.myName) .. ": collision ended with " .. tostring(event.other.id ))
             if event.other.id == "planet" or event.other.id == "star" then
                 if self.id == "wallLeft" and not event.other.fromLeft then
                     timer.performWithDelay(1000, function()
@@ -350,9 +436,9 @@ function scene:create( event )
     -- GLOBAL COLLISION HANDLER
 
     local function onGlobalCollision( event )
-        print("on onGlobalCollision")
+        --print("on onGlobalCollision")
         if ( event.phase == "began" ) then
-            print( "began: " .. tostring(event.object1.id) .. " and " .. tostring(event.object2.id) )
+            --print( "began: " .. tostring(event.object1.id) .. " and " .. tostring(event.object2.id) )
             --print(event.object1.id, event.object2.id)
             -- if event.object1.id == "logo" or event.object2.id == "logo" then
             --     return
@@ -373,11 +459,34 @@ function scene:create( event )
                 -- we are handling wall collision locally
                 return
             end
-            if (event.object1.id == "star" and event.object1.id == "planet") or
-                (event.object2.id == "star" and event.object2.id == "planet") then
+            if (o1.id == "star" and o2.id == "planet") or
+                (o2.id == "star" and o1.id == "planet") then
                 -- not allow collision between planet and stars
                 return
             end
+            if (o1.id == "ship" and o2.id == "cli") or
+                (o2.id == "ship" and o1.id == "cli") then
+                -- not allow collision between planet and stars
+                return
+            end
+            if (o1.id == "star" and o2.id == "pack") or
+                (o2.id == "star" and o1.id == "pack") then
+                -- not allow collision between planet and stars
+                return
+            end
+
+            if (o1.id == "cli" and o2.id == "laser") or
+                (o2.id == "cli" and o1.id == "laser") then
+                if o1.onCollision then
+                    o1.onCollision()
+                end
+                if o2.onCollision then
+                    o2.onCollision()
+                end
+                return
+            end
+
+
 
             -- allowing laser collisions with all objects (the ship is already removed from that above)
             if (o1.id== "laser" or o2.id == "laser") then
@@ -439,13 +548,13 @@ function scene:create( event )
 
     sceneGroup.startRefreshing = function()
         if sceneGroup._refreshLoopId then return end
-        sceneGroup._refreshLoopId = timer.performWithDelay(2000, function()
+        sceneGroup._refreshLoopId = timer.performWithDelay(3000, function()
             print("going to get Virtual Machines...")
             API.getVirtualMachines(
                 function(dataVMs) -- on success
                     classPlanet.refreshPlanets()
                 end)
-        end,IS_DEBUG and 1 or -1)
+        end,1) --IS_DEBUG and 1 or -1)
     end
 
     sceneGroup.stopRefreshing = function()
@@ -460,9 +569,27 @@ function scene:create( event )
     -- LOADING BASIC OPENSTACK INFO
 
     sceneGroup.loadOpenStackInfo = function()
-        API.getImages()
-        API.getFlavors()
-        API.getNetworks()
+        local apisToRun = {"getVirtualMachines", "getImages", "getFlavors", "getNetworks"}
+        local i = 0
+
+        local function runNextApi()
+            i=i+1
+            if i > #apisToRun then
+                --print("we finished running")
+                return
+            end
+            local apiName = apisToRun[i]
+            print("going to run API ", apiName)
+            timer.performWithDelay(1000, function()
+                API[apiName](runNextApi,runNextApi)
+            end)
+
+
+        end
+        runNextApi()
+        --API.getImages()
+        --API.getFlavors()
+        --API.getNetworks()
     end
 
     sceneGroup.loadOpenStackInfo()
@@ -492,7 +619,6 @@ function scene:show( event )
         end
 
         transition.from(sceneGroup.logo,{xScale=0.1, yScale=0.1, time=2000, transition=easing.outElastic, onComplete=function()
-
             ship.goToStartPosition()
         end})
 

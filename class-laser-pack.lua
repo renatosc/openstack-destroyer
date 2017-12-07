@@ -10,13 +10,12 @@ local newPack = function()
         list[#list+1] = k
     end
     local laserType = list[rndon]
-    print("laserType=", laserType)
-	if classPack._pack then return end
+    ---print("laserType=", laserType)
+	if classPack._pack then return end -- only 1 pack at a time
 
     local packFilename = LASER_TYPE[laserType].filename
-	local pack = display.newImage("images/pill_"..packFilename ..".png") -- display.newRect(packW*.5, packH*.5, packW, packH)
+	local pack = display.newImage("images/pill_"..packFilename ..".png")
 	pack.name = "pack-".. os.time()
-	--pack.fill = {type="image", filename="images/pack.png"}
     pack.id = "pack"
 
 	local fromLeft = (math.random( 1,4 ) > 2)
@@ -41,8 +40,8 @@ local newPack = function()
 	pack:applyLinearImpulse( impulse, 0, pack.x, pack.y)
 
 --DEBUG VALUES
-pack.x = CENTER_X
-pack.y = CENTER_Y
+-- pack.x = CENTER_X
+-- pack.y = CENTER_Y
 
 
 

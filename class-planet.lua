@@ -9,41 +9,43 @@ function createPlanet(options)
 	local index = math.random(1,3)
 
 	-- optional parameters
-	local imageName = options.image or ""
+	local raw = options.raw
+	local os = options.os or ""
 	local x = options.x
 	local y = options.y
 	local fromLeft = options.fromLeft or (math.random( 1,4 ) > 2)
 
-
+print("OSSS=", os)
 
 	-- finding the characteristics
 
 	-- finding OS of the virtual machine
-	local isWindows = false
-	local isLinux = false
-	local imageFilename = "computer-"
-	-- local imageWidth = 789
-	-- local imageHeight = 792
-	local pointsValue = 0
-	if string.find( imageName, "win" ) then
-		isWindows = true
-		imageFilename = imageFilename .. "windows.png"
-		pointsValue = 10
-	else
-		isLinux = false
-		imageFilename = imageFilename .. "linux.png"
-		pointsValue = 5
-	end
+	local isWindows = os == "windows"
+	local isLinux = os == "linux"
+	local imageFilename = "computer-" .. os .. ".png"
+	local pointsValue = isWindows and 10 or 5
+	-- if string.find( imageName, "win" ) then
+	-- 	isWindows = true
+	-- 	imageFilename = imageFilename .. "windows.png"
+	-- 	pointsValue = 10
+	-- else
+	-- 	isLinux = false
+	-- 	imageFilename = imageFilename .. "linux.png"
+	-- 	pointsValue = 5
+	-- end
 
 
 
-	local size = 3
-	if string.find( imageName, "small" ) then
-		size = 1
-	elseif string.find( imageName, "medium" ) then
-		size = 2
-	end
+	-- local size = 3
+	-- if string.find( imageName, "small" ) then
+	-- 	size = 1
+	-- elseif string.find( imageName, "medium" ) then
+	-- 	size = 2
+	-- end
+	local size = _G.STORAGE.getVMSize(raw)
 size = 3
+
+
 	print("Creating Planet for VM with name '" ..tostring(name) .. "'")
 
 
@@ -134,12 +136,12 @@ size = 3
 		end)
 	end
 
-	planet.resume = function()
+	planet.unpause = function()
 		print("on planet.resume")
 		if planet._isResuming then return end
 		planet._isResuming = true
 		local tId = transition.blink( panet, { time=1000 }  )
-		API.startVirtualMachine(planet.vmId, function()
+		API.unpauseVirtualMachine(planet.vmId, function()
 			planet._isAlreadyHit = false
 			planet._isResuming = false
 			planet._isPausing = false
@@ -160,7 +162,7 @@ size = 3
     		planet.pause()
     		return
 		elseif laserType == "start" then
-			planet.resume()
+			planet.unpause()
 			return
     	elseif laserType == "destroy" then
     		planet.isVisible = false
@@ -221,7 +223,7 @@ classPlanet.refreshPlanets = function()
 
 	-- finding the virtual machines that does not exist anymore
 	for name, planet in pairs(currPlanets) do
-		if activeVMs[name] == nil then
+		if activeVMs[name] == nil and pausedVms[name] == nil then
 			planetsToDestroy[name] = planet
 		end
 	end
@@ -229,7 +231,7 @@ classPlanet.refreshPlanets = function()
 
 	-- creating the planets for the new VMs
 	for name, planet in pairs(planetsToCreate) do
-		createPlanet({name=name, id=planet.id })
+		createPlanet({name=name, id=planet.id, os=planet.os })
 		if IS_DEBUG then
 			break
 		end

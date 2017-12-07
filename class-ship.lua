@@ -6,7 +6,7 @@ classShip._ship = nil
 LASER_TYPE = {}
 LASER_TYPE["destroy"] = {filename="red", name="Destroy", balance = 10}
 LASER_TYPE["pause"] = {filename="blue", name="Pause", balance = 10}
-LASER_TYPE["start"] = {filename="green", name="Start", balance = 10}
+LASER_TYPE["start"] = {filename="green", name="Unpause", balance = 10}
 MAX_BALANCE = 20 -- max laser balance
 
 
@@ -139,7 +139,7 @@ classShip.new = function()
         ship._isAlreadyHit = true
         ship.showExplosion()
 
-        --_G.END_GAME()
+        _G.END_GAME()
     end
 
 
@@ -159,7 +159,7 @@ classShip.new = function()
 
 
 
-
+    ship.x = -100
     group.goToStartPosition = function(skipAnimation)
         if skipAnimation then
             ship.x=CENTER_X

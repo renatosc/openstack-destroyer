@@ -11,7 +11,8 @@ local newStar = function()
 	local starH = 40
 
 	local star = display.newImageRect("images/star.png", starW, starW) -- display.newRect(starW*.5, starH*.5, starW, starH)
-	star.name = "star-".. os.time()
+	star.id = "star"
+    star.name = "star-".. os.time()
 	--star.fill = {type="image", filename="images/star.png"}
 
 	local fromLeft = (math.random( 1,4 ) > 2)
@@ -19,7 +20,7 @@ local newStar = function()
 
 
 	local initialX = SCREEN_W + star.contentWidth
-	local impulse = - (0.01  + math.rad( 1,5 )/100)
+	local impulse = - (0.02  + math.rad( 5,10 )/100)
 	if fromLeft then
 		initialX = - star.contentWidth
 		impulse = - impulse
@@ -44,7 +45,7 @@ local newStar = function()
 		local mEffects = require("module-effects")
     	star._effect = mEffects.show("whitePuff",star.x, star.y, star.contentWidth, star.contentHeight)
 	end
-print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
+
 
     star.onCollision = function()
     	local currX, currY = star.x, star.y
@@ -58,18 +59,17 @@ print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
     	-- spin new instance
     	API.createNewVirtualMachine(star.name,
     		function(vmData)
+        		require("class-planet").new{
+        			id=vmData.id,
+        			name=vmData.name,
+        			x=currX,
+        			y=currY,
+        			fromLeft=fromLeft,
 
-    		require("class-planet").new{
-    			id=vmData.id,
-    			name=vmData.name,
-    			x=currX,
-    			y=currY,
-    			fromLeft=fromLeft,
-
-    		}
-    		star.destroy()
-            _G.GAME.increasePointsBy(20)
-    	end)
+        		}
+        		star.destroy()
+                _G.GAME.increasePointsBy(20)
+    	   end)
 
     end
 
