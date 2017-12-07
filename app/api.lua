@@ -384,14 +384,10 @@ api.terminateVirtualMachine = function(vmId, onSuccess, onFail)
             local success = tonumber(event.response) == 200
             print("sucess=", success)
             if success then
-
-                _G.STORAGE.saveVMs(data)
-
                 if onSuccess then
                     onSuccess(data)
                 end
             else
-
                 if onFail then
                     onFail(data.errorMessage, data.errorCode)
                 end
