@@ -138,7 +138,7 @@ function scene:create( event )
     physics.start( )
     physics.setGravity(0,0)
 
-    physics.setDrawMode( "hybrid" )
+--    physics.setDrawMode( "hybrid" )
 --physics.setDrawMode( "debug" )
 
     local logo = display.newImage(sceneGroup, "images/logo.png")
@@ -177,8 +177,8 @@ function scene:create( event )
     sceneGroup.startGame = function()
         print("GAME STARTED! Good Luck!")
 
-        --sceneGroup.startRefreshing()
-        --require("class-star").start()
+        sceneGroup.startRefreshing()
+        require("class-star").start()
 
         _G.GAME.startTimer()
     end
