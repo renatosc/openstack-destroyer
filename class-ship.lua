@@ -109,6 +109,34 @@ classShip.new = function()
 
     end
 
+    ship.onCollision = function()
+        print("on ship.onCollision")
+        display.remove(ship)
+        if ship._isAlreadyHit then return end
+
+        ship._isAlreadyHit = true
+        ship.showExplosion()
+
+        --_G.END_GAME()
+    end
+
+
+    ship.showExplosion = function()
+        local mEffects = require("module-effects")
+        ship._effect = mEffects.show("explosion", ship.x, ship.y, ship.contentWidth, ship.contentHeight)
+    end
+
+
+    ship.destroy = function()
+        print("on planet.destroy - ", ship._effect)
+        if ship._effect then
+            ship._effect.stop()
+        end
+        display.remove(ship)
+    end
+
+
+
     classShip._ship = group
 
     return group

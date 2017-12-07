@@ -28,6 +28,107 @@ function scene:create( event )
     background.fill.scaleY = 0.5
 
 
+    ----------
+    -- HEADER (Points, Timer, Number of Machines)
+    local function createHeader( ... )
+
+        local margin = 10
+
+        local group = display.newGroup()
+
+        -- CENTER
+        local lbTimer = display.newText{parent=group, text="1:00", x=CENTER_X, y=20, font=native.systemFont, fontSize=24 }
+        lbTimer:setTextColor(1,1,1)
+
+
+        -- RIGHT
+        local lbNumOfInstancesValue = display.newText{parent=group, text="88", x=SCREEN_W, y=lbTimer.y, font=native.systemFont, fontSize=24 }
+        lbNumOfInstancesValue:setTextColor(1,1,1)
+        lbNumOfInstancesValue.anchorX = 0
+        lbNumOfInstancesValue.x = SCREEN_W - lbNumOfInstancesValue.contentWidth - margin
+
+        local lbNumOfInstances = display.newText{parent=group, text="Number of Instances:", x=lbNumOfInstancesValue.x - 4, y=lbTimer.y, font=native.systemFont, fontSize=24 }
+        lbNumOfInstances:setTextColor(1,1,1)
+        lbNumOfInstances.anchorX = 1
+
+
+        -- LEFT
+         local lbNumOfPoints = display.newText{parent=group, text="Points:", x=margin, y=lbTimer.y, font=native.systemFont, fontSize=24 }
+        lbNumOfPoints:setTextColor(1,1,1)
+        lbNumOfPoints.anchorX = 0
+
+        local lbNumOfPointsValue = display.newText{parent=group, text="888", x=lbNumOfPoints.x + lbNumOfPoints.contentWidth + 4, y=lbTimer.y, font=native.systemFont, fontSize=24 }
+        lbNumOfPointsValue:setTextColor(1,1,1)
+        lbNumOfPointsValue.anchorX = 0
+
+
+
+
+        group.startTimer = function(numOfPoints)
+            group.isVisible = true
+            local durationInMinutes = 1
+
+            if group._timerID ~= nil then return end
+
+            group._endTime = os.time() + durationInMinutes * 60
+
+            group._timerID = timer.performWithDelay(800, function()
+
+
+                local remainingTime = group._endTime - os.time()
+
+                 if remainingTime <= 0 then
+                    print("pairing time expired")
+                    lbTimer.text = "0:00"
+
+                    --_G.END_GAME()
+                    return
+                end
+
+                                -- updating timer label
+                local minutes = math.floor(remainingTime/60)
+                local seconds = remainingTime - minutes*60
+                lbTimer.text = string.format( "%d:%02d", minutes, seconds )
+
+            end,-1)
+
+        end
+
+        group.stopTimer = function()
+            if group._timerID then
+                timer.cancel(group._timerID)
+                group._timerID = nil
+            end
+        end
+
+        group.increasePointsBy = function(numOfPoints)
+            lbNumOfPointsValue.text = tonumber(lbNumOfPointsValue.text) + numOfPoints
+        end
+
+        group.increaseInstancesBy = function(qty)
+            lbNumOfInstancesValue.text = tonumber(lbNumOfInstancesValue.text) + qty
+        end
+
+
+        group.reset = function()
+            lbNumOfInstancesValue.text = "0"
+            lbNumOfPointsValue.text = "0"
+
+            group.stopTimer()
+        end
+
+
+        group.reset()
+
+        group.isVisible = false
+
+        _G.MIN_Y = group.contentHeight
+
+        return group
+
+    end
+    _G.GAME = createHeader()
+
     ---
 
 
@@ -37,7 +138,7 @@ function scene:create( event )
     physics.start( )
     physics.setGravity(0,0)
 
---physics.setDrawMode( "hybrid" )
+    physics.setDrawMode( "hybrid" )
 --physics.setDrawMode( "debug" )
 
     local logo = display.newImage(sceneGroup, "images/logo.png")
@@ -64,17 +165,22 @@ function scene:create( event )
 
     local classPlanet = require("class-planet")
 
+
+
     -- for i=1,3 do
     --     classPlanet.new({name=i, id=i..os.time()})
     -- end
+    --classPlanet.new({name=i, id=i, x=CENTER_X, y=CENTER_Y})
 
 
 
     sceneGroup.startGame = function()
         print("GAME STARTED! Good Luck!")
-        sceneGroup.startRefreshing()
 
-        require("class-star").start()
+        --sceneGroup.startRefreshing()
+        --require("class-star").start()
+
+        _G.GAME.startTimer()
     end
 
 
@@ -140,13 +246,14 @@ function scene:create( event )
 
 
     local function onGlobalCollision( event )
-        --print("on onGlobalCollision")
+        print("on onGlobalCollision")
         if ( event.phase == "began" ) then
-            --print( "began: " .. event.object1.myName .. " and " .. event.object2.myName )
+            print( "began: " .. event.object1.id .. " and " .. event.object2.id )
             --print(event.object1.id, event.object2.id)
             -- if event.object1.id == "logo" or event.object2.id == "logo" then
             --     return
             -- end
+            local o1, o2 = event.object1, event.object2
 
             if event.object1.id == "ship" and event.object2.id == "laser" then
                 return
@@ -154,7 +261,7 @@ function scene:create( event )
             if event.object2.id == "ship" and event.object1.id == "laser" then
                 return
             end
-            if event.object1.id ==  event.object2.id then
+            if event.object1.id == event.object2.id then
                 return
             end
             if event.object1.id == "wallLeft" or event.object1.id == "wallRight" or
@@ -162,6 +269,32 @@ function scene:create( event )
                 -- we are handling wall collision locally
                 return
             end
+            if (event.object1.id == "star" and event.object1.id == "planet") or
+                (event.object2.id == "star" and event.object2.id == "planet") then
+                -- not allow collision between planet and stars
+                return
+            end
+
+            -- allowing laser collisions with all objects (the ship is already removed from that above)
+            if (o1.id== "laser" or o2.id == "laser") then
+                if o1.onCollision then
+                    o1.onCollision()
+                end
+                if o2.onCollision then
+                    o2.onCollision()
+                end
+                return
+            end
+
+
+            -- allowing ship hit planet
+            if (o1.id== "ship" or o2.id == "planet") or (o2.id== "ship" or o1.id == "planet") then
+                print("calling c")
+                o1.onCollision()
+                o2.onCollision()
+                return
+            end
+
 
 
 

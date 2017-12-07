@@ -26,6 +26,10 @@ local newStar = function()
 	end
 	star.x = initialX
 	star.y = SCREEN_H * math.random( 1,70 )/100
+
+    -- making sure it is not on top of the game header
+    star.y = math.max(star.y, _G.MIN_Y + star.contentHeight)
+
 	star._x = initialX
 
 	physics.addBody( star, "dynamic", {radius = star.contentWidth*0.5, isSensor = true} )

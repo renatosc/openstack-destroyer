@@ -9,49 +9,87 @@ function createPlanet(options)
 	local index = math.random(1,3)
 
 	-- optional parameters
-	local imageName = options.imageName
+	local imageName = options.image or ""
 	local x = options.x
 	local y = options.y
-	local fromLeft = options.fromLeft
+	local fromLeft = options.fromLeft or (math.random( 1,4 ) > 2)
 
 
+
+	-- finding the characteristics
+
+	-- finding OS of the virtual machine
+	local isWindows = false
+	local isLinux = false
+	local imageFilename = "computer-"
+	-- local imageWidth = 789
+	-- local imageHeight = 792
+	local pointsValue = 0
+	if string.find( imageName, "win" ) then
+		isWindows = true
+		imageFilename = imageFilename .. "windows.png"
+		pointsValue = 10
+	else
+		isLinux = false
+		imageFilename = imageFilename .. "linux.png"
+		pointsValue = 5
+	end
+
+
+
+	local size = 3
+	if string.find( imageName, "small" ) then
+		size = 1
+	elseif string.find( imageName, "medium" ) then
+		size = 2
+	end
+size = math.random( 1,3 )
 	print("Creating Planet for VM with name '" ..tostring(name) .. "'")
 
-	local planetData = {}
-	planetData[1] = { y= math.random(1,4)/4,  imageWidth=50, imageHeight=50 }
-	planetData[2] = { y= math.random(1,5)/5, imageWidth=35, imageHeight=35}
-	planetData[3] = { y= math.random(1,10)/10,  imageWidth=30, imageHeight=30}
+	-- local planetData = {}
+	-- planetData[1] = { y= math.random(1,4)/4,  imageWidth=50, imageHeight=50 }
+	-- planetData[2] = { y= math.random(1,5)/5, imageWidth=35, imageHeight=35}
+	-- planetData[3] = { y= math.random(1,10)/10,  imageWidth=30, imageHeight=30}
 
+	local scaleFactor = 1 * (size/3)
 
-	local p = planetData[index]
-	local planet = display.newImageRect( "images/planet-" .. index .. ".png", p.imageWidth, p.imageHeight )
-	planet.y = display.contentCenterY * p.y
+	--local p = planetData[index]
+	--local planet = display.newImageRect( "images/planet-" .. index .. ".png", p.imageWidth, p.imageHeight )
+	local planet = display.newImage( "images/" .. imageFilename)
+	planet.width = planet.width * scaleFactor
+	planet.height = planet.height * scaleFactor
+
 	planet.id = "planet"
 	planet.vmName = name
 	planet.vmId = vmId
+	planet.fromLeft = fromLeft
+	planet.isWindows = isWindows
+	planet.isLinux = isLinux
+	planet.size = size
+	planet.pointsValue = pointsValue
 
 
-	local fromLeft = fromLeft or (math.random( 1,4 ) > 2)
-
-	local initialX = SCREEN_W + planet.contentWidth
+	local initialX = SCREEN_W + planet.contentWidth + math.random(1,30)
 	local impulse = - (0.01  + math.rad( 1,5 )/100)
 	if fromLeft then
-		initialX = - planet.contentWidth
+		initialX = - planet.contentWidth - math.random(1,30)
 		impulse = - impulse
 	end
 	planet.x = initialX
 	planet.y = SCREEN_H * math.random( 1,70 )/100
-	planet.fromLeft = fromLeft
+
 
 	-- overwriting position if manually set (used for when the planet is coming from a star)
 	planet.x = x or planet.x
 	planet.y = y or planet.y
 
+	-- making sure it is not on top of the game header
+	planet.y = math.max(planet.y, _G.MIN_Y + planet.contentHeight)
 
 	planet.initialx = planet.x
-	physics.addBody( planet, "dynamic", {radius = p.imageWidth*0.5} )
+	physics.addBody( planet, "dynamic", {radius = planet.contentWidth*0.5} )
     planet.isSensor = true;
-	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
+--	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
 
 
 
@@ -64,7 +102,7 @@ function createPlanet(options)
 
     planet.onCollision = function()
     	print("on planet.onCollision")
-    	display.remove(planet)
+    	planet.isVisible = false
     	if planet._isAlreadyHit then return end
 
     	planet._isAlreadyHit = true
@@ -73,7 +111,6 @@ function createPlanet(options)
     		function()
     			planet.destroy()
     		end)
-
     end
 
 
@@ -83,6 +120,8 @@ function createPlanet(options)
     		planet._effect.stop()
     	end
     	display.remove(planet)
+    	_G.GAME.increaseInstancesBy(-1)
+    	_G.GAME.increasePointsBy(planet.pointsValue)
     end
 
     -- storing this planet
@@ -93,7 +132,7 @@ function createPlanet(options)
     	planet.x = planet.initialx
     end
 
-
+    _G.GAME.increaseInstancesBy(1)
 
     --timer.performWithDelay(2000, function()planet.x = planet.initialx end, -1)
 
