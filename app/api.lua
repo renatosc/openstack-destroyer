@@ -380,7 +380,8 @@ api.terminateVirtualMachine = function(vmId, onSuccess, onFail)
     getJSON("os/del",
         params,
         function(data)
-            local success = data.errorCode == nil
+            --local success = data and data.errorCode == nil
+            local success = tonumber(event.response) == 200
             print("sucess=", success)
             if success then
 
