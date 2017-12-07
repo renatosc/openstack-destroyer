@@ -246,9 +246,9 @@ function scene:create( event )
 
 
     local function onGlobalCollision( event )
-        print("on onGlobalCollision")
+        --print("on onGlobalCollision")
         if ( event.phase == "began" ) then
-            print( "began: " .. event.object1.id .. " and " .. event.object2.id )
+            --print( "began: " .. event.object1.id .. " and " .. event.object2.id )
             --print(event.object1.id, event.object2.id)
             -- if event.object1.id == "logo" or event.object2.id == "logo" then
             --     return

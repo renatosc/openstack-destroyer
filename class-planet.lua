@@ -89,7 +89,7 @@ size = math.random( 1,3 )
 	planet.initialx = planet.x
 	physics.addBody( planet, "dynamic", {radius = planet.contentWidth*0.5} )
     planet.isSensor = true;
---	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
+	planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
 
 
 
