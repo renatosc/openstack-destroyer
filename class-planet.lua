@@ -107,6 +107,16 @@ size = 3
 		end)
 	end
 
+	planet.stopMotion = function()
+		timer.performWithDelay(10, function()
+		    planet:setLinearVelocity( 0, 0)
+		end)
+	end
+
+	planet.resumeMotion = function()
+		planet:applyLinearImpulse( impulse*5, 0, planet.x, planet.y)
+	end
+
 	planet.pause = function()
 		if planet._isPausing then return end
 		planet._isPausing = true
@@ -115,13 +125,17 @@ size = 3
 			planet._isAlreadyHit = false
 			transition.cancel(tId)
 			planet.alpha = 0.3
-			planet._imgPause = diplay.newImage("images/pause.png")
+			planet.stopMotion()
+			planet._imgPause = display.newImage("images/pause.png")
+			local scaleF = (planet.contentHeight / planet._imgPause.contentHeight)*.5
+			planet._imgPause:scale(scaleF, scaleF)
 			planet._imgPause.x = planet.x
 			planet._imgPause.y = planet.y
 		end)
 	end
 
 	planet.resume = function()
+		print("on planet.resume")
 		if planet._isResuming then return end
 		planet._isResuming = true
 		local tId = transition.blink( panet, { time=1000 }  )
@@ -131,6 +145,8 @@ size = 3
 			planet._isPausing = false
 			transition.cancel(tId)
 			planet.alpha = 1
+			display.remove(planet._imgPause)
+			planet.resumeMotion()
 		end)
 	end
 

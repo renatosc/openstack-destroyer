@@ -448,7 +448,9 @@ end
 api.startVirtualMachine = function(vmId, onSuccess, onFail)
     print("Calling API to startVirtualMachine VM with Id '" .. tostring(vmId) .. "'")
     timer.performWithDelay(1000, function()
+        if onSuccess then
         onSuccess()
+        end
     end)
 
     if true then return end

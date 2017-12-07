@@ -72,6 +72,7 @@ function scene:create( event )
         local cShip = require("class-ship")
         local dataLasers = LASER_TYPE
         local groupButtons = display.newGroup()
+        local buttonsByLaserType = {}
         local btLaserHandler = function(id, newStatus)
             cShip._laserSelectedId = id
             for i=1, groupButtons.numChildren do
@@ -81,7 +82,7 @@ function scene:create( event )
                 end
             end
         end
-        local function createLaserGroup(id, name, imageColor, onHandler)
+        local function createLaserGroup(id, name, imageColor, laserBalance, onHandler)
             local groupButton = display.newGroup()
             groupButton.id = id
             local colorSelected = {.4,.4,.4}
@@ -117,6 +118,26 @@ function scene:create( event )
             lb.anchorY = 1
             lb:setTextColor(1,1,1)
 
+            local balance = display.newRect(groupButton, 0,buttonH,buttonW,10)
+            balance.anchorX = 0
+            balance.anchorY = 1
+            balance.fill = {133/255,200/255,55/255}
+            if imageColor == "red" then
+                balance.fill = {173/255,58/255,58/255}
+            elseif imageColor == "blue" then
+                balance.fill = {127/255,212/255,248/255}
+            end
+            balance._qty = laserBalance
+
+            groupButton.increaseBalanceBy = function(num)
+                balance._qty = math.min((balance._qty + num),MAX_BALANCE)
+                local w = balance._qty / MAX_BALANCE
+                balance.width = w * buttonW
+                return balance._qty
+            end
+            groupButton.increaseBalanceBy(0)
+
+
             groupButton.deSelect = function()
                 button.fill = colorNotSelected
             end
@@ -129,12 +150,13 @@ function scene:create( event )
         end
 
         for id, v in pairs(dataLasers) do
-            local b = createLaserGroup(id, v.name, v.filename,btLaserHandler)
+            local b = createLaserGroup(id, v.name, v.filename, v.balance, btLaserHandler)
             b.x = groupButtons.numChildren > 0 and groupButtons.contentWidth or 0
             groupButtons:insert(b)
             if id == "destroy" then
                 b.select()
             end
+            buttonsByLaserType[id] = b
         end
         groupButtons.x = SCREEN_W
         groupButtons._x = SCREEN_W - groupButtons.contentWidth
@@ -142,6 +164,11 @@ function scene:create( event )
 
         group.showLaserSelection = function()
             transition.to(groupButtons, {x = groupButtons._x, time=1000, transition=easing.inOutCubic})
+        end
+
+        _G.BALANCE_INCREASE_BY = function(qty, laserType)
+            print("_G.BALANCE_INCREASE_BY=", qty, laserType)
+            return buttonsByLaserType[laserType].increaseBalanceBy(qty)
         end
 
 
@@ -261,6 +288,7 @@ function scene:create( event )
 
         sceneGroup.startRefreshing()
         require("class-star").start()
+        require("class-laser-pack").start()
 
         _G.GAME.startTimer()
 
@@ -362,6 +390,18 @@ function scene:create( event )
                 return
             end
 
+            if (o1.id == "pack" and o2.id == "ship") then
+                if o1.onCollision then
+                    o1.onCollision(o2.laserType)
+                end
+                return
+            end
+            if (o2.id == "pack" and o1.id == "ship") then
+                if o2.onCollision then
+                    o2.onCollision(o2.laserType)
+                end
+                return
+            end
 
             -- allowing ship hit planet
             if (o1.id== "ship" or o2.id == "planet") or (o2.id== "ship" or o1.id == "planet") then

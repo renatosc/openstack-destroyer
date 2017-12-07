@@ -68,8 +68,7 @@ print("CENTER_X, CENTER_Y=", CENTER_X, CENTER_Y)
 
     		}
     		star.destroy()
-
-
+            _G.GAME.increasePointsBy(20)
     	end)
 
     end

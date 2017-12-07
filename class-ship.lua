@@ -4,9 +4,12 @@ classShip._ship = nil
 
 
 LASER_TYPE = {}
-LASER_TYPE["destroy"] = {filename="red", name="Destroy"}
-LASER_TYPE["pause"] = {filename="blue", name="Pause"}
-LASER_TYPE["start"] = {filename="green", name="Start"}
+LASER_TYPE["destroy"] = {filename="red", name="Destroy", balance = 10}
+LASER_TYPE["pause"] = {filename="blue", name="Pause", balance = 10}
+LASER_TYPE["start"] = {filename="green", name="Start", balance = 10}
+MAX_BALANCE = 20 -- max laser balance
+
+
 
 classShip._laserSelectedId = nil
 
@@ -24,7 +27,14 @@ classShip.new = function()
 
     group.shoot = function()
         print("on shoot")
-
+        if _G.BALANCE_INCREASE_BY(0, classShip._laserSelectedId) == 0 then
+            print("no more laser available")
+            return
+        end
+        if _G.HAS_SHOT_FIRST_SHOOT then
+            _G.BALANCE_INCREASE_BY(-1, classShip._laserSelectedId)
+        end
+        _G.HAS_SHOT_FIRST_SHOOT = true
         local laserFilename = LASER_TYPE[classShip._laserSelectedId].filename
         local laser = display.newImage("images/laser-" .. laserFilename ..".png")
         physics.addBody( laser, "dynamic" ,{radius=4, isSensor=true})
@@ -87,7 +97,9 @@ classShip.new = function()
     group.rotate = function(direction)
     	local delta = 10
     	--ship.rotation = ship.rotation + direction*delta
-    	ship:applyAngularImpulse( direction*delta )
+        if ship then
+    	   ship:applyAngularImpulse( direction*delta )
+        end
     end
 
 
@@ -103,6 +115,7 @@ classShip.new = function()
     end
 
     group.move = function()
+        if ship == nil then return end
 
     	local force = 0.15
 
