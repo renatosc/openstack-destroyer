@@ -96,7 +96,7 @@ storage.saveFlavors = function(dataFlavors)
 	storage._flavors = dataFlavors
 end
 storage.getFlavors = function() -- 1 = small, 2 = medium, 3 big
-	return storage._flavorsor {}
+	return storage._flavors or {}
 end
 storage.getFlavorForSize = function(size) -- 1 = small, 2 = medium, 3 big
 	return storage._flavors[size]

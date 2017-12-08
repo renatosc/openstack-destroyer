@@ -16,7 +16,7 @@ OpenStack Destroyer is a cross-platform game that interacts with OpenStack via A
 
 
 ## Screenshots:
-![alt text](https://dl.dropboxusercontent.com/s/dpd4uzgostyczf0/openstackdestroyer-screens.png "App screenshots")
+![alt text](https://dl.dropboxusercontent.com/s/gu62wjz9zp0yi8q/screen.png "App screenshot")
 
 
 

@@ -48,7 +48,7 @@ _G.STORAGE = require("module-storage")
 
 
 -- giving a small delay to main to allow it close, avoiding possible black screens when lauching Corona
-timer.performWithDelay(10, function()
+timer.performWithDelay(1000, function()
 
     local composer = require("composer");
     --composer.recycleOnSceneChange = true

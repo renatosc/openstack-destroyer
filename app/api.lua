@@ -456,7 +456,7 @@ api.startVirtualMachine = function(vmId, onSuccess, onFail)
     getJSON("os/op",
         params,
         function(data, event)
-            local success = event.response == 200
+            local success = tonumber(event.response) == 200
             print("sucess=", success)
             if success then
                 if onSuccess then
@@ -477,22 +477,26 @@ end
 
 api.startAllVirtualMachines = function()
     local vms = _G.STORAGE.getVMs()
-
+    jp(vms)
+    print("vms====", vms)
+    print(require("json").encode(vms))
     local vmIds = {}
     for _,vm in pairs(vms) do
-        vmIds[#vmIds+1] = v,id
+        vmIds[#vmIds+1] = vm.id
     end
+    print("#vmIds=", #vmIds)
     local i = 0
 
     local function runNextApi()
         i=i+1
+        print(i, #vmIds)
         if i > #vmIds then
             print("we fininshed running")
             return
         end
         local vmId = vmIds[i]
         print("going to start VM with id ", id)
-        timer.performWithDelay(1000, function()
+        timer.performWithDelay(2000, function()
             api.startVirtualMachine(vmId, runNextApi,runNextApi)
         end)
 
@@ -565,17 +569,24 @@ api.startAllVMsViaCLI = function()
     local vms = _G.STORAGE.getVMs()
 
     local vmNames = {}
-    for name,_ in pairs(vms) do
-        vmNames[#vmNames+1] = name
+    for name,vm in pairs(vms) do
+        if vm.status ~= "ACTIVE" then
+            vmNames[#vmNames+1] = name
+        end
     end
     if #vmNames == 0 then
         print("no Instaces to start")
         return
     end
-    local vmNamesString = table.concat( vmNames, " " )
-    local cliCMD = "openstack server start " .. vmNamesString
-    print("CLI CMD=", cliCMD)
-    api.cli(cliCMD)
+
+    -- local vmNamesString = table.concat( vmNames, " " )
+    -- local cliCMD = "openstack server start " .. vmNamesString  -- sending 1 cli cmd with all instaces fail all together if any of the instaces cannot be transformed into active state
+    -- api.cli(cliCMD)
+
+    for i,name in ipairs(vmNames) do
+        local cliCMD = "openstack server start " .. name
+        api.cli(cliCMD)
+    end
 end
 
 

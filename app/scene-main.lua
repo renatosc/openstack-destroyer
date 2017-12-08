@@ -200,8 +200,8 @@ function scene:create( event )
 
             local input = native.newTextField( bkg.x, bkg.y, bkg.contentWidth*0.7, 60 )
             --sceneGroup:insert(input)
-
-            local btSubmit = require("widget").newButton{
+            local btSubmit
+            btSubmit = require("widget").newButton{
                 label= "submit",
                 x = bkg.x,
                 y = bkg.contentHeight*.85,
@@ -216,6 +216,9 @@ function scene:create( event )
                     display.remove(input)
                     display.remove(lb)
                     display.remove(bkg)
+                    timer.performWithDelay(10, function()
+                        display.remove(btSubmit)
+                    end)
 
                 end
             }
@@ -241,6 +244,7 @@ function scene:create( event )
                  if remainingTime <= 0 then
                     print("pairing time expired")
                     lbTimer.text = "0:00"
+                    timer.cancel(group._timerID)
 
                     _G.END_GAME()
                     return
@@ -270,6 +274,9 @@ function scene:create( event )
             lbNumOfInstancesValue.text = tonumber(lbNumOfInstancesValue.text) + qty
         end
 
+        group.setInstancesNumberTo = function(qty)
+            lbNumOfInstancesValue.text = tonumber(lbNumOfInstancesValue.text) + qty
+        end
 
         group.reset = function()
             lbNumOfInstancesValue.text = "0"
@@ -292,8 +299,15 @@ function scene:create( event )
 
 
     _G.END_GAME = function()
+        if sceneGroup._gameEnded then return end
+        sceneGroup._gameEnded = true
 
-        physics.stop( )
+
+        _G.GAME.stopTimer()
+        timer.performWithDelay(10, function()
+            physics.stop( )
+        end)
+
 
         sceneGroup.stopRefreshing()
 
@@ -368,8 +382,8 @@ function scene:create( event )
     sceneGroup.startGame = function()
 
         print("GAME STARTED! Good Luck!")
-        --API.startAllVMsViaCLI()
-        API.startAllVirtualMachines()
+        API.startAllVMsViaCLI()
+        --API.startAllVirtualMachines()
 
         sceneGroup.startRefreshing()
         require("class-star").start()

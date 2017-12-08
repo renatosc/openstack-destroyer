@@ -15,7 +15,7 @@ function createPlanet(options)
 	local y = options.y
 	local fromLeft = options.fromLeft or (math.random( 1,4 ) > 2)
 
-print("OSSS=", os)
+
 
 	-- finding the characteristics
 
