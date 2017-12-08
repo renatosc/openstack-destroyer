@@ -120,6 +120,9 @@ classShip.new = function()
     	local force = 0.15
 
     	local angle = (ship.rotation) -- * (360/100) -- (100 == total percange)
+        if angle == nil then
+            return
+        end
         local sin = math.sin(angle*math.pi/180)
         local cos = math.cos(angle*math.pi/180)
         local x = force*sin

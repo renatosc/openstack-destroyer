@@ -8,17 +8,12 @@ end
 
 local function myUnhandledErrorListener( event )
     jp(event)
-    native.requestExit()
+    --native.requestExit()
 end
 
 Runtime:addEventListener("unhandledError", myUnhandledErrorListener)
 
 
-
-jp = function(data)
-	local j = require("json").prettify(data)
-	print(j)
-end
 
 
 _G.API = require("api")

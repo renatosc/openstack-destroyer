@@ -436,6 +436,42 @@ api.pauseVirtualMachine = function(vmId, onSuccess, onFail)
         true)    -- silentRequest
 end
 
+-- pause a virtual machines
+api.unpauseVirtualMachine = function(vmId, onSuccess, onFail)
+    print("Calling API to unpauseVirtualMachine VM with Id '" .. tostring(vmId) .. "'")
+    -- timer.performWithDelay(1000, function()
+    --     onSuccess()
+    -- end)
+
+    -- if true then return end
+
+
+    local params = {}
+    params["type"] = "server"
+    params["action"] = "UNPAUSE"
+    params["id"] = vmId
+
+    getJSON("os/op",
+        params,
+        function(data, event)
+            local success = tonumber(event.response) == 200
+            print("sucess=", success)
+            if success then
+                if onSuccess then
+                    onSuccess()
+                end
+            else
+                if onFail then
+                    onFail()
+                end
+            end
+
+        end,
+        "GET",  -- method
+        nil,     -- onProgress
+        true)    -- silentRequest
+end
+
 -- start a virtual machines
 api.startVirtualMachine = function(vmId, onSuccess, onFail)
     print("Calling API to startVirtualMachine VM with Id '" .. tostring(vmId) .. "'")
